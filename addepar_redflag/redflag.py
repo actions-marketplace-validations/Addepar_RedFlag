@@ -36,6 +36,7 @@ from .util.llm import (
     build_prompt,
     MAX_PARSER_RETRIES
 )
+from .util.slack import Slack
 
 
 async def query_model(
@@ -137,6 +138,7 @@ async def query_model(
 async def redflag(
     github: Github,
     jira: Jira,
+    slack: Slack,
     config: dict,
 ):
     try:
@@ -504,6 +506,31 @@ async def redflag(
                     f'Wrote JSON output to {file_path}',
                     MessageType.SUCCESS
                 )
+
+    # If Slack client is configured, send the results
+    if slack:
+        # Check if there are in-scope items
+        if in_scope:
+            blocks = slack.build_slack_blocks(
+                config.get('slack').get('headline'),
+                {
+                    "in_scope": in_scope,
+                    "out_of_scope": out_of_scope,
+                }
+            )
+
+            if blocks:
+                slack.post_message(blocks)
+
+                pretty_print(
+                    f'Successfully sent message to Slack in channel #{slack.channel}',
+                    MessageType.SUCCESS
+                )
+        else:
+            pretty_print(
+                'No reviews to send to Slack',
+                MessageType.INFO
+            )
 
     if errored:
         file_path = Path(output_dir or '.') / f'Errors-{filename}.json'

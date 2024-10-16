@@ -110,6 +110,20 @@ export RF_JIRA_USER=your-username-here
 export RF_JIRA_TOKEN=your-token-here
 ```
 
+##### Slack Token *(Optional)*
+
+1. [Create a Slack App](https://api.slack.com/quickstart)
+1. [Request required scopes](https://api.slack.com/quickstart#scopes)
+1. [Install and authorize the App](https://api.slack.com/quickstart#installing)
+1. Add environment variables or configuration entries when running RedFlag
+
+```shell
+export RF_SLACK_TOKEN=xoxb-slack-token-here
+export RF_SLACK_CHANNEL=C0123456789
+```
+
+*Don't forget to invite the bot to the channel to avoid a `channel_not_found` error*.
+
 ### Usage
 
 Here are some examples on how to run RedFlag in batch mode.
@@ -139,7 +153,7 @@ By default, RedFlag produces an HTML report that can be opened in a browser.
 
 RedFlag can be run in CI pipelines to flag PRs and add the appropriate reviewers.
 This mode uses GitHub Actions to run RedFlag on every PR and post a comment if
-the PR requires a review.
+the PR requires a review. Additionally, CI Mode is best suited for Slack alerting.
 
 [![CI Mode][docs-ci-mode]][docs-ci-mode-url]
 
@@ -186,12 +200,15 @@ The following table shows configuration options for each parameter:
 
 #### Integration Settings
 
-| Parameter                                                                                                                           | CLI Param      | Env Var          | Config File   | Default |
-|-------------------------------------------------------------------------------------------------------------------------------------|----------------|------------------|---------------|---------|
-| [GitHub Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) | --github-token | RF_GITHUB_TOKEN  | github_token  | -       |
-| Jira URL                                                                                                                            | --jira-url     | RF_JIRA_URL      | jira.url      | -       |
-| Jira Username                                                                                                                       | --jira-user    | RF_JIRA_USER     | jira.user     | -       |
-| [Jira Token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)                    | --jira-token   | RF_JIRA_TOKEN    | jira.token    | -       |
+| Parameter                                                                                                                           | CLI Param        | Env Var           | Config File   | Default |
+|-------------------------------------------------------------------------------------------------------------------------------------|------------------|-------------------|---------------|---------|
+| [GitHub Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) | --github-token   | RF_GITHUB_TOKEN   | github_token  | -       |  
+| Jira URL                                                                                                                            | --jira-url       | RF_JIRA_URL       | jira.url           | -       |  
+| Jira Username                                                                                                                       | --jira-user      | RF_JIRA_USER      | jira.user          | -       |  
+| [Jira Token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)                    | --jira-token     | RF_JIRA_TOKEN     | jira.token         | -       |  
+| [Slack Token](https://api.slack.com/concepts/token-types)                                                                           | --slack-token    | RF_SLACK_TOKEN    | slack.token         | -       |  
+| [Slack Channel (ID)](https://slack.com/help/articles/221769328-Locate-your-Slack-URL-or-ID)                                         | --slack-channel  | RF_SLACK_CHANNEL  | slack.channel       | -       |
+| Slack Message Headline                                                                                                              | --slack-headline | RF_SLACK_HEADLINE | slack.headline      | -       |
 
 #### LLM Settings
 
