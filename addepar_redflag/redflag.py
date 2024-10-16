@@ -85,7 +85,7 @@ async def query_model(
         'format_instructions': review_parser.get_format_instructions(),
     }
 
-    # Check the token count if we pass all files in the PR
+    # Check the token count if we pass all files in scope
     result.token_count = llm.get_num_tokens(review_prompt.format(**prompt_input))
 
     try:
@@ -102,7 +102,7 @@ async def query_model(
         )
         return
 
-    # Only create a test plan if the PR should be reviewed
+    # Only create a test plan if this should be reviewed
     if result.review and result.review.result:
         file_context = (
             build_file_context(result=result, files=result.review.files)
@@ -208,14 +208,14 @@ async def redflag(
         result = Result(pr=pr)
         if jira:
             result.ticket = get_jira_ticket_from_pr_title(
-                jira,
-                pr.title
+                client=jira,
+                title=pr.title
             )
 
         results.append(result)
 
         pretty_print(
-            'Retrieved PRs',
+            'Retrieved commits',
             MessageType.SUCCESS
         )
     else:
@@ -230,7 +230,7 @@ async def redflag(
                 # If we can't find anything, exit
                 if not compare.ahead_by:
                     pretty_print(
-                        'No PRs to evaluate, exiting.',
+                        'Nothing to evaluate, exiting.',
                         MessageType.FATAL
                     )
                     exit(0)
@@ -277,7 +277,7 @@ async def redflag(
             )
 
             progress_task_id = progress.add_task(
-                f'Retrieving {progress_count} PRs',
+                f'Retrieving {progress_count} commits',
                 total=progress_count
             )
 
@@ -333,8 +333,8 @@ async def redflag(
                 result = Result(pr=pr)
                 if jira:
                     result.ticket = get_jira_ticket_from_pr_title(
-                        jira,
-                        title,
+                        client=jira,
+                        title=title,
                         progress=progress
                     )
 
@@ -351,7 +351,7 @@ async def redflag(
                     )
 
         pretty_print(
-            f'Retrieved {progress_count} PRs',
+            f'Retrieved {progress_count} commits',
             MessageType.SUCCESS
         )
 
@@ -388,7 +388,7 @@ async def redflag(
         )
 
         progress_task_id = progress.add_task(
-            'Evaluating PRs',
+            'Evaluating commits',
             total=len(results)
         )
 
@@ -416,7 +416,7 @@ async def redflag(
         exit(1)
 
     pretty_print(
-        'Evaluated PRs',
+        'Evaluated commits',
         MessageType.SUCCESS
     )
 
